@@ -724,11 +724,9 @@
         <span class="redirect-note">Redirigiendo en unos segundos</span>
     </div>
 
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
     <script>
     (function() {
-        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjFmqCtOZ84dxRA2dmuDxCMYiN9oYwBc0XbIwT2-MzvMlQTpMNSyE7sC1SGQOkZiYd/exec';
+        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfATKXJaiSTKaQ_K_6Fdm4JXtBbUclDNPbJ-Mhipu3_JoXKIQh-V317qnKHUQh4J_1/exec';
         var WHATSAPP_GROUP = 'https://chat.whatsapp.com/FLmUfBRR9NTKDWGRffJG26';
 
         var form = document.getElementById('registroForm');
@@ -753,11 +751,8 @@
             document.getElementById(id).classList.add('error');
         }
 
-        form.setAttribute('action', GOOGLE_SCRIPT_URL);
-        form.setAttribute('method', 'POST');
-        form.setAttribute('target', 'hidden_iframe');
-
         form.addEventListener('submit', function(e) {
+            e.preventDefault();
             clearErrors();
 
             var nombre = document.getElementById('nombre').value.trim();
@@ -766,30 +761,39 @@
             var nacimiento = document.getElementById('nacimiento').value;
 
             var valid = true;
-
             if (!nombre) { showError('nombre'); valid = false; }
             if (!validateEmail(email)) { showError('email'); valid = false; }
             if (!validatePhone(telefono)) { showError('telefono'); valid = false; }
             if (!nacimiento) { showError('nacimiento'); valid = false; }
-
-            if (!valid) {
-                e.preventDefault();
-                return;
-            }
+            if (!valid) return;
 
             btn.classList.add('loading');
             btn.disabled = true;
 
-            setTimeout(showSuccess, 1500);
+            var url = GOOGLE_SCRIPT_URL
+                + '?nombre=' + encodeURIComponent(nombre)
+                + '&email=' + encodeURIComponent(email)
+                + '&telefono=' + encodeURIComponent(telefono)
+                + '&nacimiento=' + encodeURIComponent(nacimiento);
+
+            var img = new Image();
+            img.onload = img.onerror = function() {
+                showSuccess();
+            };
+            img.src = url;
+
+            setTimeout(showSuccess, 3000);
         });
 
+        var done = false;
         function showSuccess() {
+            if (done) return;
+            done = true;
             btn.classList.remove('loading');
             overlay.classList.add('active');
-
             setTimeout(function() {
                 window.location.href = WHATSAPP_GROUP;
-            }, 3000);
+            }, 2500);
         }
     })();
     </script>
