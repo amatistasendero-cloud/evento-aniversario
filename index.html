@@ -646,7 +646,7 @@
                     <p>Completa tus datos para confirmar tu asistencia</p>
                 </div>
 
-                <form id="registroForm" method="POST" action="https://script.google.com/macros/s/AKfycbxudT4wJDNQuGYq1BLiiBA2oiEEUzxtVjEie1GCI47gWL1i2Dp9jdUJ3fOzO7VoaI28/exec" novalidate>
+                <form id="registroForm" method="GET" action="https://script.google.com/macros/s/AKfycbxudT4wJDNQuGYq1BLiiBA2oiEEUzxtVjEie1GCI47gWL1i2Dp9jdUJ3fOzO7VoaI28/exec" novalidate>
                     <div class="form-group">
                         <label for="nombre">
                             <span class="icon-label">
@@ -726,12 +726,8 @@
 
     <script>
     (function() {
-        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfATKXJaiSTKaQ_K_6Fdm4JXtBbUclDNPbJ-Mhipu3_JoXKIQh-V317qnKHUQh4J_1/exec';
-        var WHATSAPP_GROUP = 'https://chat.whatsapp.com/FLmUfBRR9NTKDWGRffJG26';
-
         var form = document.getElementById('registroForm');
         var btn = document.getElementById('submitBtn');
-        var overlay = document.getElementById('successOverlay');
 
         function validateEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -752,7 +748,6 @@
         }
 
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
             clearErrors();
 
             var nombre = document.getElementById('nombre').value.trim();
@@ -765,35 +760,15 @@
             if (!validateEmail(email)) { showError('email'); valid = false; }
             if (!validatePhone(telefono)) { showError('telefono'); valid = false; }
             if (!nacimiento) { showError('nacimiento'); valid = false; }
-            if (!valid) return;
+
+            if (!valid) {
+                e.preventDefault();
+                return;
+            }
 
             btn.classList.add('loading');
             btn.disabled = true;
-
-            var url = GOOGLE_SCRIPT_URL
-                + '?nombre=' + encodeURIComponent(nombre)
-                + '&email=' + encodeURIComponent(email)
-                + '&telefono=' + encodeURIComponent(telefono)
-                + '&nacimiento=' + encodeURIComponent(nacimiento);
-
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = url;
-            document.body.appendChild(iframe);
-
-            setTimeout(showSuccess, 2000);
         });
-
-        var done = false;
-        function showSuccess() {
-            if (done) return;
-            done = true;
-            btn.classList.remove('loading');
-            overlay.classList.add('active');
-            setTimeout(function() {
-                window.location.href = WHATSAPP_GROUP;
-            }, 2500);
-        }
     })();
     </script>
 </body>
